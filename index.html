@@ -277,6 +277,37 @@
     const remainingWords = document.getElementById('remainingWords');
     const hideTitle = document.getElementById('hideTitle');
 
+
+     const monthlyValues = {
+      0: "Empatía y Responsabilidad",
+      1: "Perseverancia y Superación",
+      2: "Esperanza y Tenacidad",
+      3: "Compañerismo y Participación",
+      4: "Solidaridad y Compromiso",
+      5: "Autonomía y Colaboración",
+      6: "Autoestima y Perseverancia",
+      7: "Autoestima y Perseverancia",
+      8: "Autonomía e Inclusión",
+      9: "Creatividad y Motivación",
+      10: "Responsabilidad y Colaboración",
+      11: "Equidad y Respeto a la diversidad"
+    };
+
+    function updateTicker() {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const values = monthlyValues[currentMonth];
+      
+      const ticker = document.getElementById('ticker');
+      ticker.innerHTML = `
+        <span class="ticker-item">Valores del mes: ${values}</span>
+        <span class="ticker-item">Recordar las reglas: Levantar la mano para pedir la palabra</span>
+        <span class="ticker-item">Ser respetuoso con compañeros y profesor</span>
+        <span class="ticker-item">Prof. Wilfran L Decena</span>
+      `;
+    }
+    
+
     /* === ESTADO === */
     let allWords = [];
     let filteredWords = [];
