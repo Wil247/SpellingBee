@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -156,14 +156,16 @@ audio{
 
   <!-- FILTERS -->
   <div class="filter-section">
-    <label>Letter Range</label>
-    <div class="filter-row">
-      <input type="number" id="rangeFrom" placeholder="From" value="1">
-      <input type="number" id="rangeTo" placeholder="To" value="15">
-    </div>
+    <div id="filterInputs">
+      <label>Letter Range</label>
+      <div class="filter-row">
+        <input type="number" id="rangeFrom" placeholder="From" value="1">
+        <input type="number" id="rangeTo" placeholder="To" value="15">
+      </div>
 
-    <label>Exact Words (separated by commas or line breaks)</label>
-    <textarea id="specificWords" placeholder="e.g., apple, book, house"></textarea>
+      <label>Exact Words (separated by commas or line breaks)</label>
+      <textarea id="specificWords" placeholder="e.g., apple, book, house"></textarea>
+    </div>
 
     <div class="button-group">
       <button class="btn-primary" onclick="applyFilters()">Load Words</button>
@@ -273,6 +275,9 @@ function applyFilters(){
   playerSection.classList.remove('hidden');
   playNextWord();
   updateStats();
+
+  // ✅ Ocultar los campos de entrada
+  document.getElementById('filterInputs').classList.add('hidden');
 }
 
 /* NEXT WORD */
@@ -327,9 +332,12 @@ function resetGame(){
   playedWords = [];
   currentWord = null;
   playerSection.classList.add('hidden');
-  audioPlayer.innerHTML = ''; // ✅ Limpiar fuentes
+  audioPlayer.innerHTML = '';
   updateStats();
   showMessage('🔄 Game reset', 'info');
+
+  // ✅ Mostrar los campos de entrada nuevamente
+  document.getElementById('filterInputs').classList.remove('hidden');
 }
 
 /* STATS */
