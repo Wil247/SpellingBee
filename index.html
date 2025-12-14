@@ -230,7 +230,7 @@ async function loadWordList(){
     const text = await res.text();
     allWords = [...new Set(
       text.split(/[,\n\r]+/)
-          .map(w => w.trim().toLowerCase())
+          .map(w => w.trim())
           .filter(w => w && /^[a-z]*$/i.test(w))
     )];
     showMessage(`✅ ${allWords.length} words loaded`, 'success');
@@ -248,7 +248,7 @@ function applyFilters(){
   const exactInput = specificWords.value;
   const exactList = exactInput
     ? exactInput.split(/[,\n\r]+/)
-                .map(w => w.trim().toLowerCase())
+                .map(w => w.trim())
                 .filter(w => w)
     : [];
 
@@ -301,7 +301,7 @@ function renderWord(){
   // ✅ Limpiar y crear nuevo <source>
   audioPlayer.innerHTML = '';
   const source = document.createElement('source');
-  source.src = `Words/${encodeURIComponent(currentWord)}.wav`;
+  source.src = `Words/${encodeURIComponent(currentWord)}.mp3`;
   source.type = 'audio/mpeg';
   audioPlayer.appendChild(source);
 
@@ -309,7 +309,7 @@ function renderWord(){
   audioPlayer.load();
   audioPlayer.play().catch(err => {
     console.warn('Audio not found:', currentWord);
-    showMessage(`🔊 Missing audio: <code>${currentWord}.wav</code>`, 'warning');
+    showMessage(`🔊 Missing audio: <code>${currentWord}.mp3</code>`, 'warning');
   });
 }
 
