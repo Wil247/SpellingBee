@@ -176,18 +176,37 @@
       color: #667eea;
     }
 
-    /* FOOTER */
+    /* FOOTER - TICKER ANIMADO */
     .footer {
       background: #1a202c;
       color: white;
       padding: 0.8rem 0;
       width: 100%;
-      text-align: center;
-      font-size: 0.95rem;
       position: fixed;
       bottom: 0;
       left: 0;
       z-index: 100;
+      overflow: hidden;
+    }
+
+    .ticker {
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      padding-left: 100%;
+      animation: ticker 25s linear infinite;
+    }
+
+    .ticker-content:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes ticker {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
     }
   </style>
 </head>
@@ -242,15 +261,13 @@
       <div><div id="totalWords" class="stat-number">0</div>Total</div>
       <div><div id="playedCount" class="stat-number">0</div>Played</div>
       <div><div id="remainingWords" class="stat-number">0</div>Remaining</div>
-    </div> 
-  </div> 
+    </div>
+  </div>
 
+  <!-- FOOTER CON CARRUSEL ANIMADO -->
   <div class="footer">
-    <div class="ticker-wrapper" id="ticker">
-      <span class="ticker-item">Valores del mes: Empatía y Responsabilidad</span>
-      <span class="ticker-item">Recordar las reglas: Levantar la mano para pedir la palabra</span>
-      <span class="ticker-item">Ser respetuoso con compañeros y profesor</span>
-      <span class="ticker-item">Prof. Wilfran L Decena</span>
+    <div class="ticker">
+      <div class="ticker-content" id="tickerContent"></div>
     </div>
   </div>
 
@@ -282,8 +299,8 @@
     const remainingWords = document.getElementById('remainingWords');
     const hideTitle = document.getElementById('hideTitle');
 
-
-     const monthlyValues = {
+    /* === VALORES POR MES === */
+    const monthlyValues = {
       0: "Empatía y Responsabilidad",
       1: "Perseverancia y Superación",
       2: "Esperanza y Tenacidad",
@@ -298,22 +315,25 @@
       11: "Equidad y Respeto a la diversidad"
     };
 
+    /* === ACTUALIZAR CARRUSEL === */
     function updateTicker() {
       const now = new Date();
       const currentMonth = now.getMonth();
       const values = monthlyValues[currentMonth];
-      
-      const ticker = document.getElementById('ticker');
-      ticker.innerHTML = `
-        <span class="ticker-item">Valores del mes: ${values}</span>
-        <span class="ticker-item">Recordar las reglas: Levantar la mano para pedir la palabra</span>
-        <span class="ticker-item">Ser respetuoso con compañeros y profesor</span>
-        <span class="ticker-item">Prof. Wilfran L Decena</span>
-      `;
-    }
-    
 
-    /* === ESTADO === */
+      const messages = [
+        `Valores del mes: ${values}`,
+        "Recordar las reglas: Levantar la mano para pedir la palabra",
+        "Ser respetuoso con compañeros y profesor",
+        "Prof. Wilfran L Decena"
+      ];
+
+      // Repetir para evitar saltos en la animación
+      const repeated = [...messages, ...messages, ...messages];
+      document.getElementById('tickerContent').textContent = repeated.join(" • ");
+    }
+
+    /* === ESTADO DEL JUEGO === */
     let allWords = [];
     let filteredWords = [];
     let playedWords = [];
@@ -328,7 +348,7 @@
         const text = await res.text();
         allWords = [...new Set(
           text.split(/[,\n\r]+/)
-              .map(w => w.trim())
+              .map(w => w.trim().toLowerCase())
               .filter(w => w && /^[a-z]+$/i.test(w))
         )];
         showMessage(`✅ ${allWords.length} words loaded`, 'success');
@@ -344,7 +364,7 @@
       const max = parseInt(rangeTo.value) || 99;
       const exactInput = specificWords.value;
       const exactList = exactInput
-        ? exactInput.split(/[,\n\r]+/).map(w => w.trim()).filter(w => w)
+        ? exactInput.split(/[,\n\r]+/).map(w => w.trim().toLowerCase()).filter(w => w)
         : [];
 
       let candidates = allWords;
@@ -367,8 +387,6 @@
       playerSection.classList.remove('hidden');
       playNextWord();
       updateStats();
-
-      // ✅ Ocultar inputs
       document.getElementById('filterInputs').classList.add('hidden');
     }
 
@@ -387,10 +405,9 @@
       updateStats();
     }
 
-    /* === RENDERIZAR PALABRA Y AUDIO === */
+    /* === RENDERIZAR === */
     function renderWord() {
       if (!currentWord) return;
-
       wordText.textContent = currentWord;
       wordText.classList.toggle('hidden', !revealed);
       emoji.classList.toggle('hidden', revealed);
@@ -416,7 +433,7 @@
       emoji.classList.toggle('hidden', revealed);
     }
 
-    /* === REINICIAR JUEGO === */
+    /* === REINICIAR === */
     function resetGame() {
       filteredWords = [];
       playedWords = [];
@@ -425,41 +442,26 @@
       audioPlayer.innerHTML = '';
       updateStats();
       showMessage('🔄 Game reset', 'info');
-
-      // ✅ Mostrar inputs
       document.getElementById('filterInputs').classList.remove('hidden');
     }
 
-    /* === ACTUALIZAR ESTADÍSTICAS === */
+    /* === ESTADÍSTICAS === */
     function updateStats() {
       totalWords.textContent = filteredWords.length;
       playedCount.textContent = playedWords.length;
       remainingWords.textContent = Math.max(0, filteredWords.length - playedWords.length);
     }
 
-    /* === MOSTRAR MENSAJES === */
+    /* === MENSAJES === */
     function showMessage(msg, type) {
       messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
     }
 
-    /* === INICIALIZAR === */
-    document.addEventListener('DOMContentLoaded', loadWordList);
-
-    function updateDate() {
-      const dateElement = document.getElementById('currentDate');
-      const now = new Date();
-      const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      };
-      dateElement.textContent = now.toLocaleDateString('es-ES', options);
-    }
-    
-    updateDate();
-    updateTicker();
-    setInterval(updateDate, 60000);
+    /* === INICIAR === */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadWordList();
+      updateTicker();
+    });
   </script>
 </body>
 </html>
