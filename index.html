@@ -328,7 +328,7 @@
         const text = await res.text();
         allWords = [...new Set(
           text.split(/[,\n\r]+/)
-              .map(w => w.trim().toLowerCase())
+              .map(w => w.trim())
               .filter(w => w && /^[a-z]+$/i.test(w))
         )];
         showMessage(`✅ ${allWords.length} words loaded`, 'success');
@@ -344,7 +344,7 @@
       const max = parseInt(rangeTo.value) || 99;
       const exactInput = specificWords.value;
       const exactList = exactInput
-        ? exactInput.split(/[,\n\r]+/).map(w => w.trim().toLowerCase()).filter(w => w)
+        ? exactInput.split(/[,\n\r]+/).map(w => w.trim()).filter(w => w)
         : [];
 
       let candidates = allWords;
