@@ -146,6 +146,17 @@ audio{
   font-weight:bold;
   color:#667eea;
 }
+
+  .footer {
+      background: #1a202c;
+      color: white;
+      padding: 1rem 0;
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      z-index: 100;
+    }
+  
 </style>
 </head>
 
@@ -220,6 +231,15 @@ document.addEventListener('keydown', e => {
 
 </div>
 
+  <div class="footer">
+    <div class="ticker-wrapper" id="ticker">
+      <span class="ticker-item">Valores del mes: Empatía y Responsabilidad</span>
+      <span class="ticker-item">Recordar las reglas: Levantar la mano para pedir la palabra</span>
+      <span class="ticker-item">Ser respetuoso con compañeros y profesor</span>
+      <span class="ticker-item">Prof. Wilfran L Decena</span>
+    </div>
+  </div>
+  
 <script>
 const rangeFrom = document.getElementById('rangeFrom');
 const rangeTo = document.getElementById('rangeTo');
@@ -370,6 +390,21 @@ function showMessage(msg, type){
 
 /* INIT */
 document.addEventListener('DOMContentLoaded', loadWordList);
+
+  const monthlyValues = {
+      0: "Empatía y Responsabilidad",
+      1: "Perseverancia y Superación",
+      2: "Esperanza y Tenacidad",
+      3: "Compañerismo y Participación",
+      4: "Solidaridad y Compromiso",
+      5: "Autonomía y Colaboración",
+      6: "Autoestima y Perseverancia",
+      7: "Autoestima y Perseverancia",
+      8: "Autonomía e Inclusión",
+      9: "Creatividad y Motivación",
+      10: "Responsabilidad y Colaboración",
+      11: "Equidad y Respeto a la diversidad"
+    };
 </script>
 
 </body>
