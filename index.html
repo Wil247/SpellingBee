@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 Spelling Bee</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.container{
+  background:#fff;
+  border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+  padding:40px;
+  max-width:800px;
+  width:100%;
+}
+
+h1{
+  text-align:center;
+  color:#667eea;
+  margin-bottom:25px;
+}
+
+/* SECTIONS */
+.filter-section,.player-section{
+  background:#f8f9fa;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+label{
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
+}
+
+input,textarea{
+  width:100%;
+  padding:10px;
+  border:2px solid #ddd;
+  border-radius:6px;
+}
+
+textarea{min-height:70px}
+
+.filter-row{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+/* CHECKBOX */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    cursor: pointer;
+}
+
+/* BUTTONS */
+.button-group{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:10px;
+  margin:20px 0;
+}
+
+button{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  color:#fff;
+  transition:.2s;
+}
+
+button:hover{opacity:.9}
+
+.btn-primary{background:#667eea}
+.btn-success{background:#28a745}
+.btn-danger{background:#dc3545}
+
+/* DISPLAY */
+.song-title{
+  font-size:2.2em;
+  text-align:center;
+  margin-bottom:15px;
+}
+
+.song-emoji{
+  font-size:4.5em;
+  text-align:center;
+  margin-bottom:15px;
+}
+
+.hidden{display:none}
+
+audio{
+  width:100%;
+  max-width:450px;
+  display:block;
+  margin:0 auto;
+}
+
+/* MESSAGES */
+.message{
+  padding:12px;
+  border-radius:8px;
+  margin:10px 0;
+  text-align:center;
+}
+.info{background:#d1ecf1;color:#0c5460}
+.success{background:#d4edda;color:#155724}
+.warning{background:#fff3cd;color:#856404}
+
+/* STATS */
+.stats{
+  display:flex;
+  justify-content:space-around;
+  background:#e9ecef;
+  border-radius:10px;
+  padding:15px;
+}
+
+.stat-number{
+  font-size:1.6em;
+  font-weight:bold;
+  color:#667eea;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <h1>🎵 Spelling Bee</h1>
+
+  <!-- FILTERS -->
+  <div class="filter-section">
+    <label>Letter Range</label>
+    <div class="filter-row">
+      <input type="number" id="rangeFrom" placeholder="From" value="1">
+      <input type="number" id="rangeTo" placeholder="To" value="15">
+    </div>
+
+    <label>Exact Words (separated by commas or line breaks)</label>
+    <textarea id="specificWords" placeholder="e.g., apple, book, house"></textarea>
+
+    <div class="button-group">
+      <button class="btn-primary" onclick="applyFilters()">Load Words</button>
+    </div>
+  </div>
+
+  <!-- SPELLING MODE -->
+  <div class="checkbox-group">
+    <input type="checkbox" id="hideTitle" onchange="toggleSpellingMode()">
+    <label for="hideTitle">Spelling Mode (hide word)</label>
+  </div>
+
+  <div id="messageContainer"></div>
+
+  <!-- PLAYER -->
+  <div id="playerSection" class="player-section hidden">
+    <div id="wordDisplay">
+      <div id="emoji" class="song-emoji hidden">😊</div>
+      <div id="wordText" class="song-title"></div>
+    </div>
+    <audio id="audioPlayer" controls></audio>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="button-group">
+    <button class="btn-success" onclick="playNextWord()">Next</button>
+    <button class="btn-danger" onclick="resetGame()">Reset</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div><div id="totalWords" class="stat-number">0</div>Total</div>
+    <div><div id="playedCount" class="stat-number">0</div>Played</div>
+    <div><div id="remainingWords" class="stat-number">0</div>Remaining</div>
+  </div>
+
+</div>
+
+<script>
+const rangeFrom = document.getElementById('rangeFrom');
+const rangeTo = document.getElementById('rangeTo');
+const specificWords = document.getElementById('specificWords');
+const playerSection = document.getElementById('playerSection');
+const wordText = document.getElementById('wordText');
+const emoji = document.getElementById('emoji');
+const audioPlayer = document.getElementById('audioPlayer');
+const messageContainer = document.getElementById('messageContainer');
+const totalWords = document.getElementById('totalWords');
+const playedCount = document.getElementById('playedCount');
+const remainingWords = document.getElementById('remainingWords');
+const hideTitle = document.getElementById('hideTitle');
+
+let allWords = [];
+let filteredWords = [];
+let playedWords = [];
+let currentWord = null;
+let revealed = true;
+
+/* LOAD CSV FROM Words/ */
+async function loadWordList(){
+  try{
+    const res = await fetch('Words/words.csv');
+    if (!res.ok) throw new Error('File not found');
+    const text = await res.text();
+    allWords = [...new Set(
+      text.split(/[,\n\r]+/)
+          .map(w => w.trim().toLowerCase())
+          .filter(w => w && /^[a-z]*$/i.test(w))
+    )];
+    showMessage(`✅ ${allWords.length} words loaded`, 'success');
+  }catch(err){
+    console.error(err);
+    showMessage('❌ Could not load <code>Words/words.csv</code>', 'warning');
+  }
+}
+
+/* APPLY FILTERS */
+function applyFilters(){
+  const min = parseInt(rangeFrom.value) || 1;
+  const max = parseInt(rangeTo.value) || 99;
+  
+  const exactInput = specificWords.value;
+  const exactList = exactInput
+    ? exactInput.split(/[,\n\r]+/)
+                .map(w => w.trim().toLowerCase())
+                .filter(w => w)
+    : [];
+
+  let candidates = allWords;
+  if (exactList.length > 0) {
+    candidates = allWords.filter(word => exactList.includes(word));
+  }
+
+  filteredWords = candidates.filter(w => w.length >= min && w.length <= max);
+
+  playedWords = [];
+  currentWord = null;
+
+  if (filteredWords.length === 0) {
+    showMessage('⚠️ No words match the filters', 'warning');
+    playerSection.classList.add('hidden');
+    updateStats();
+    return;
+  }
+
+  showMessage(`🎯 ${filteredWords.length} words available`, 'info');
+  playerSection.classList.remove('hidden');
+  playNextWord();
+  updateStats();
+}
+
+/* NEXT WORD */
+function playNextWord(){
+  const remaining = filteredWords.filter(w => !playedWords.includes(w));
+  if (!remaining.length) {
+    showMessage('🎉 All words have been played!', 'info');
+    return;
+  }
+
+  currentWord = remaining[Math.floor(Math.random() * remaining.length)];
+  playedWords.push(currentWord);
+  revealed = !hideTitle.checked;
+  renderWord();
+  updateStats();
+}
+
+/* RENDER WITH <source> TAG */
+function renderWord(){
+  if (!currentWord) return;
+  
+  wordText.textContent = currentWord;
+  wordText.classList.toggle('hidden', !revealed);
+  emoji.classList.toggle('hidden', revealed);
+
+  // ✅ Limpiar y crear nuevo <source>
+  audioPlayer.innerHTML = '';
+  const source = document.createElement('source');
+  source.src = `Words/${encodeURIComponent(currentWord)}.wav`;
+  source.type = 'audio/mpeg';
+  audioPlayer.appendChild(source);
+
+  // Cargar y reproducir
+  audioPlayer.load();
+  audioPlayer.play().catch(err => {
+    console.warn('Audio not found:', currentWord);
+    showMessage(`🔊 Missing audio: <code>${currentWord}.wav</code>`, 'warning');
+  });
+}
+
+/* SPELLING MODE */
+function toggleSpellingMode(){
+  if (!currentWord) return;
+  revealed = !hideTitle.checked;
+  wordText.classList.toggle('hidden', !revealed);
+  emoji.classList.toggle('hidden', revealed);
+}
+
+/* RESET */
+function resetGame(){
+  filteredWords = [];
+  playedWords = [];
+  currentWord = null;
+  playerSection.classList.add('hidden');
+  audioPlayer.innerHTML = ''; // ✅ Limpiar fuentes
+  updateStats();
+  showMessage('🔄 Game reset', 'info');
+}
+
+/* STATS */
+function updateStats(){
+  totalWords.textContent = filteredWords.length;
+  playedCount.textContent = playedWords.length;
+  remainingWords.textContent = Math.max(0, filteredWords.length - playedWords.length);
+}
+
+/* MESSAGES */
+function showMessage(msg, type){
+  messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
+}
+
+/* INIT */
+document.addEventListener('DOMContentLoaded', loadWordList);
+</script>
+
+</body>
+</html>
