@@ -272,7 +272,7 @@
   </div>
 
   <script>
-    /* === PROTECCIÓN BÁSICA === */
+    /* === BASIC PROTECTION === */
     document.addEventListener('contextmenu', (e) => e.preventDefault());
     document.addEventListener('keydown', (e) => {
       if (
@@ -285,7 +285,7 @@
       }
     });
 
-    /* === ELEMENTOS DOM === */
+    /* === DOM ELEMENTS === */
     const rangeFrom = document.getElementById('rangeFrom');
     const rangeTo = document.getElementById('rangeTo');
     const specificWords = document.getElementById('specificWords');
@@ -299,7 +299,7 @@
     const remainingWords = document.getElementById('remainingWords');
     const hideTitle = document.getElementById('hideTitle');
 
-    /* === VALORES POR MES === */
+    /* === MONTHLY VALUES === */
     const monthlyValues = {
       0: "Empathy & Responsibility", 1: "Perseverance & Overcoming", 2: "Hope & Tenacity",
       3: "Teamwork & Participation", 4: "Solidarity & Commitment", 5: "Autonomy & Collaboration",
@@ -311,30 +311,30 @@
     function updateTicker() {
       const now = new Date();
       const messages = [
-        `Valores del mes: ${monthlyValues[now.getMonth()]}`,
-        "Recordar las reglas: Levantar la mano para pedir la palabra",
-        "Ser respetuoso con compañeros y profesor",
+        `Monthly Values: ${monthlyValues[now.getMonth()]}`,
+        "Remember the rules: Raise your hand to ask for the word",
+        "Be respectful to classmates and teacher",
         "Prof. Wilfran L Decena"
       ];
 
-      // Repetir para evitar saltos en la animación
+      // Repeat to avoid animation jumps
       const repeated = [...messages, ...messages, ...messages];
       
-      // Usar &nbsp; para espacios amplios + emoji
+      // Use &nbsp; for wide spaces + emoji
       const joined = repeated.join(" &nbsp; &nbsp; 😊 &nbsp; &nbsp; ");
       
-      // ¡Importante! Usar innerHTML para que se interpreten las entidades HTML
+      // IMPORTANT: Use innerHTML to render HTML entities
       document.getElementById('tickerContent').innerHTML = joined;
     }
 
-    /* === ESTADO DEL JUEGO === */
+    /* === GAME STATE === */
     let allWords = [];
     let filteredWords = [];
     let playedWords = [];
     let currentWord = null;
     let revealed = true;
 
-    /* === CARGAR PALABRAS === */
+    /* === LOAD WORDS === */
     async function loadWordList() {
       try {
         const res = await fetch('Words/words.csv');
@@ -352,7 +352,7 @@
       }
     }
 
-    /* === APLICAR FILTROS === */
+    /* === APPLY FILTERS === */
     function applyFilters() {
       const min = parseInt(rangeFrom.value) || 1;
       const max = parseInt(rangeTo.value) || 99;
@@ -384,7 +384,7 @@
       document.getElementById('filterInputs').classList.add('hidden');
     }
 
-    /* === SIGUIENTE PALABRA === */
+    /* === NEXT WORD === */
     function playNextWord() {
       const remaining = filteredWords.filter(w => !playedWords.includes(w));
       if (!remaining.length) {
@@ -399,7 +399,7 @@
       updateStats();
     }
 
-    /* === RENDERIZAR === */
+    /* === RENDER WORD === */
     function renderWord() {
       if (!currentWord) return;
       wordText.textContent = currentWord;
@@ -419,7 +419,7 @@
       });
     }
 
-    /* === MODO SPELLING === */
+    /* === SPELLING MODE === */
     function toggleSpellingMode() {
       if (!currentWord) return;
       revealed = !hideTitle.checked;
@@ -427,7 +427,7 @@
       emoji.classList.toggle('hidden', revealed);
     }
 
-    /* === REINICIAR === */
+    /* === RESET GAME === */
     function resetGame() {
       filteredWords = [];
       playedWords = [];
@@ -439,19 +439,19 @@
       document.getElementById('filterInputs').classList.remove('hidden');
     }
 
-    /* === ESTADÍSTICAS === */
+    /* === STATS === */
     function updateStats() {
       totalWords.textContent = filteredWords.length;
       playedCount.textContent = playedWords.length;
       remainingWords.textContent = Math.max(0, filteredWords.length - playedWords.length);
     }
 
-    /* === MENSAJES === */
+    /* === MESSAGES === */
     function showMessage(msg, type) {
       messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
     }
 
-    /* === INICIAR === */
+    /* === INIT === */
     document.addEventListener('DOMContentLoaded', () => {
       loadWordList();
       updateTicker();
