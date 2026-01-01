@@ -315,25 +315,25 @@
       11: "Equidad y Respeto a la diversidad"
     };
 
-       // === UPDATE TICKER ===
-function updateTicker() {
-  const now = new Date();
-  const messages = [
-    `Monthly Values: ${monthlyValues[now.getMonth()]}`,
-    "Remember the rules: Raise your hand to ask for the word",
-    "Be respectful to classmates and teacher",
-    "Prof. Wilfran L Decena"
-  ];
+    // === UPDATE TICKER ===
+    function updateTicker() {
+      const now = new Date();
+      const messages = [
+        `Valores del mes: ${monthlyValues[now.getMonth()]}`,
+        "Recordar las reglas: Levantar la mano para pedir la palabra",
+        "Ser respetuoso con compañeros y profesor",
+        "Prof. Wilfran L Decena"
+      ];
 
-  // Repetir para suavizar la animación
-  const repeated = [...messages, ...messages, ...messages];
-  
-  // Usar &nbsp; para espacios amplios + emoji
-  const joined = repeated.join(" &nbsp; &nbsp; 😊 &nbsp; &nbsp; ");
-  
-  // ¡Importante! Usar innerHTML para que se interpreten las entidades HTML
-  document.getElementById('tickerContent').innerHTML = joined;
-}
+      // Repetir para evitar saltos en la animación
+      const repeated = [...messages, ...messages, ...messages];
+      
+      // Usar &nbsp; para espacios amplios + emoji
+      const joined = repeated.join(" &nbsp; &nbsp; 😊 &nbsp; &nbsp; ");
+      
+      // ¡Importante! Usar innerHTML para que se interpreten las entidades HTML
+      document.getElementById('tickerContent').innerHTML = joined;
+    }
 
     /* === ESTADO DEL JUEGO === */
     let allWords = [];
@@ -466,4 +466,4 @@ function updateTicker() {
     });
   </script>
 </body>
-</html> 
+</html>
