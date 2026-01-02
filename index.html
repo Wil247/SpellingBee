@@ -4,179 +4,210 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎵 Spelling Bee</title>
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 20px;
-      margin: 0;
     }
 
     .container {
       background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
       padding: 40px;
       max-width: 800px;
       width: 100%;
-      z-index: 10;
     }
 
     h1 {
       text-align: center;
-      color: #667eea;
-      margin-bottom: 25px;
+      color: #4a5568;
+      margin-bottom: 28px;
+      font-weight: 700;
+      font-size: 2.4rem;
     }
 
-    /* SECTIONS */
     .filter-section,
     .player-section {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
+      background: #f9fbfd;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #edf2f7;
+    }
+
+    .spelling-controls-section {
+      background: #f9fbff;
+      padding: 28px;
+      border-radius: 16px;
+      margin-top: 20px;
+      border: 1px solid #e2e8f0;
     }
 
     label {
       font-weight: 600;
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      color: #2d3748;
+      font-size: 0.95rem;
     }
 
-    input,
-    textarea {
+    input, textarea {
       width: 100%;
-      padding: 10px;
-      border: 2px solid #ddd;
-      border-radius: 6px;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
     }
 
-    textarea {
-      min-height: 70px;
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
     }
+
+    textarea { min-height: 80px; }
 
     .filter-row {
       display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
+      gap: 12px;
+      margin-bottom: 18px;
     }
 
-    /* CHECKBOX */
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .checkbox-group input[type='checkbox'] {
-      width: auto;
-      cursor: pointer;
-    }
-
-    /* BUTTONS */
     .button-group {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      margin: 20px 0;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 24px 0;
     }
 
     button {
-      padding: 12px;
+      padding: 13px 16px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
       color: #fff;
-      transition: 0.2s;
+      font-size: 1rem;
+      transition: transform 0.15s, opacity 0.15s;
     }
 
     button:hover {
-      opacity: 0.9;
+      transform: translateY(-2px);
+      opacity: 0.95;
     }
 
-    .btn-primary {
-      background: #667eea;
-    }
-    .btn-success {
-      background: #28a745;
-    }
-    .btn-danger {
-      background: #dc3545;
+    button:active {
+      transform: translateY(0);
     }
 
-    /* DISPLAY */
+    .btn-primary { background: #667eea; }
+    .btn-success { background: #28a745; }
+    .btn-danger  { background: #e53e3e; }
+
     .song-title {
-      font-size: 2.2em;
+      font-size: 2.4em;
       text-align: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      color: #2d3748;
+      font-weight: 700;
     }
 
     .song-emoji {
-      font-size: 4.5em;
+      font-size: 5em;
       text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .hidden {
-      display: none !important;
+      margin-bottom: 20px;
     }
 
     audio {
       width: 100%;
-      max-width: 450px;
+      max-width: 480px;
       display: block;
       margin: 0 auto;
+      margin-top: 12px;
     }
 
-    /* MESSAGES */
+    /* ✨ Estilo moderno para el checkbox */
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      justify-content: flex-start;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #cbd5e0;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .checkbox-group input[type="checkbox"]:checked {
+      background: #667eea;
+      border-color: #667eea;
+    }
+
+    .checkbox-group input[type="checkbox"]:checked::after {
+      content: "✓";
+      position: absolute;
+      color: white;
+      font-size: 14px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      font-weight: 600;
+      color: #2d3748;
+      cursor: pointer;
+    }
+
     .message {
-      padding: 12px;
-      border-radius: 8px;
-      margin: 10px 0;
+      padding: 14px;
+      border-radius: 10px;
+      margin: 16px 0;
       text-align: center;
-    }
-    .info {
-      background: #d1ecf1;
-      color: #0c5460;
-    }
-    .success {
-      background: #d4edda;
-      color: #155724;
-    }
-    .warning {
-      background: #fff3cd;
-      color: #856404;
+      font-weight: 500;
     }
 
-    /* STATS */
+    .info { background: #d1ecf1; color: #0c5460; }
+    .success { background: #d4edda; color: #155724; }
+    .warning { background: #fff3cd; color: #856404; }
+
     .stats {
       display: flex;
       justify-content: space-around;
-      background: #e9ecef;
-      border-radius: 10px;
-      padding: 15px;
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid #edf2f7;
+      margin-top: 12px;
     }
 
     .stat-number {
-      font-size: 1.6em;
-      font-weight: bold;
-      color: #667eea;
+      font-size: 1.7em;
+      font-weight: 800;
+      color: #4a5568;
     }
 
-    /* FOOTER - TICKER ANIMADO */
+    .hidden { display: none !important; }
+
     .footer {
       background: #1a202c;
       color: white;
@@ -185,13 +216,9 @@
       position: fixed;
       bottom: 0;
       left: 0;
-      z-index: 100;
       overflow: hidden;
-    }
-
-    .ticker {
-      white-space: nowrap;
-      box-sizing: border-box;
+      font-size: 0.85rem;
+      text-align: center;
     }
 
     .ticker-content {
@@ -200,262 +227,176 @@
       animation: ticker 100s linear infinite;
     }
 
-    .ticker-content:hover {
-      animation-play-state: paused;
-    }
-
     @keyframes ticker {
-      0% { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(-100%, 0, 0); }
+      from { transform: translateX(0); }
+      to   { transform: translateX(-100%); }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>🎵 Spelling Bee</h1>
 
-    <!-- FILTERS -->
-    <div class="filter-section">
-      <div id="filterInputs">
-        <label>Letter Range</label>
-        <div class="filter-row">
-          <input type="number" id="rangeFrom" placeholder="From" value="1" />
-          <input type="number" id="rangeTo" placeholder="To" value="15" />
-        </div>
+<div class="container">
+  <h1>🎵 Spelling Bee</h1>
 
-        <label>Exact Words (separated by commas or line breaks)</label>
-        <textarea id="specificWords" placeholder="e.g., apple, book, house"></textarea>
+  <!-- FILTERS -->
+  <div class="filter-section">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <label>Letter Range</label>
+      <span id="toggleFiltersText"
+            onclick="toggleFilters()"
+            style="cursor:pointer; font-weight:600; color:#667eea;">
+        HIDE
+      </span>
+    </div>
+
+    <div id="filtersContent">
+      <div class="filter-row">
+        <input type="number" id="rangeFrom" value="1" min="1" />
+        <input type="number" id="rangeTo" value="15" min="1" />
       </div>
+
+      <label>Exact Words (separated by commas or line breaks)</label>
+      <textarea id="specificWords"></textarea>
 
       <div class="button-group">
         <button class="btn-primary" onclick="applyFilters()">Load Words</button>
       </div>
     </div>
+  </div>
 
-    <!-- SPELLING MODE -->
+  <!-- SPELLING & PLAYER SECTION -->
+  <div class="spelling-controls-section">
     <div class="checkbox-group">
-      <input type="checkbox" id="hideTitle" onchange="toggleSpellingMode()" />
+      <input type="checkbox" id="hideTitle" onchange="toggleSpellingMode()">
       <label for="hideTitle">Spelling Mode (hide word)</label>
     </div>
 
     <div id="messageContainer"></div>
 
-    <!-- PLAYER -->
     <div id="playerSection" class="player-section hidden">
-      <div id="wordDisplay">
-        <div id="emoji" class="song-emoji hidden">😊</div>
-        <div id="wordText" class="song-title"></div>
-      </div>
+      <div id="emoji" class="song-emoji hidden">😊</div>
+      <div id="wordText" class="song-title"></div>
       <audio id="audioPlayer" controls></audio>
     </div>
 
-    <!-- CONTROLS -->
     <div class="button-group">
       <button class="btn-success" onclick="playNextWord()">Next</button>
       <button class="btn-danger" onclick="resetGame()">Reset</button>
     </div>
-
-    <!-- STATS -->
-    <div class="stats">
-      <div><div id="totalWords" class="stat-number">0</div>Total</div>
-      <div><div id="playedCount" class="stat-number">0</div>Played</div>
-      <div><div id="remainingWords" class="stat-number">0</div>Remaining</div>
-    </div>
   </div>
 
-  <!-- FOOTER CON CARRUSEL ANIMADO -->
-  <div class="footer">
-    <div class="ticker">
-      <div class="ticker-content" id="tickerContent"></div>
-    </div>
+  <!-- STATS -->
+  <div class="stats">
+    <div><div id="totalWords" class="stat-number">0</div>Total</div>
+    <div><div id="playedCount" class="stat-number">0</div>Played</div>
+    <div><div id="remainingWords" class="stat-number">0</div>Remaining</div>
   </div>
+</div>
 
-  <script>
-    /* === BASIC PROTECTION === */
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-    document.addEventListener('keydown', (e) => {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
-        (e.ctrlKey && e.key === 'u') ||
-        (e.ctrlKey && e.key === 'U')
-      ) {
-        e.preventDefault();
-      }
-    });
+<div class="footer">
+  <div class="ticker-content" id="tickerContent"></div>
+</div>
 
-    /* === DOM ELEMENTS === */
-    const rangeFrom = document.getElementById('rangeFrom');
-    const rangeTo = document.getElementById('rangeTo');
-    const specificWords = document.getElementById('specificWords');
-    const playerSection = document.getElementById('playerSection');
-    const wordText = document.getElementById('wordText');
-    const emoji = document.getElementById('emoji');
-    const audioPlayer = document.getElementById('audioPlayer');
-    const messageContainer = document.getElementById('messageContainer');
-    const totalWords = document.getElementById('totalWords');
-    const playedCount = document.getElementById('playedCount');
-    const remainingWords = document.getElementById('remainingWords');
-    const hideTitle = document.getElementById('hideTitle');
-
-    /* === MONTHLY VALUES === */
-    const monthlyValues = {
-      0: "Empathy & Responsibility", 1: "Perseverance & Overcoming", 2: "Hope & Tenacity",
-      3: "Teamwork & Participation", 4: "Solidarity & Commitment", 5: "Autonomy & Collaboration",
-      6: "Self-esteem & Perseverance", 7: "Self-esteem & Perseverance", 8: "Autonomy & Inclusion",
-      9: "Creativity & Motivation", 10: "Responsibility & Collaboration", 11: "Equity & Diversity Respect"
-    };
-
-    // === UPDATE TICKER ===
-    function updateTicker() {
-      const now = new Date();
-      const messages = [
-        `Monthly Values: ${monthlyValues[now.getMonth()]}`,
-        "Remember the rules: Raise your hand to ask for the word",
-        "Be respectful to classmates and teacher",
-        "Prof. Wilfran L Decena"
-      ];
-
-      // Repeat to avoid animation jumps
-      const repeated = [...messages, ...messages, ...messages];
-      
-      // Use &nbsp; for wide spaces + emoji
-      const joined = repeated.join(" &nbsp; &nbsp; 😊 &nbsp; &nbsp; ");
-      
-      // IMPORTANT: Use innerHTML to render HTML entities
-      document.getElementById('tickerContent').innerHTML = joined;
+<script>
+  /* PROTECTION */
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key))) {
+      e.preventDefault();
     }
+  });
 
-    /* === GAME STATE === */
-    let allWords = [];
-    let filteredWords = [];
-    let playedWords = [];
-    let currentWord = null;
-    let revealed = true;
+  const rangeFrom = document.getElementById('rangeFrom');
+  const rangeTo = document.getElementById('rangeTo');
+  const specificWords = document.getElementById('specificWords');
+  const playerSection = document.getElementById('playerSection');
+  const wordText = document.getElementById('wordText');
+  const emoji = document.getElementById('emoji');
+  const audioPlayer = document.getElementById('audioPlayer');
+  const messageContainer = document.getElementById('messageContainer');
+  const totalWords = document.getElementById('totalWords');
+  const playedCount = document.getElementById('playedCount');
+  const remainingWords = document.getElementById('remainingWords');
+  const hideTitle = document.getElementById('hideTitle');
 
-    /* === LOAD WORDS === */
-    async function loadWordList() {
-      try {
-        const res = await fetch('Words/words.csv');
-        if (!res.ok) throw new Error('File not found');
-        const text = await res.text();
-        allWords = [...new Set(
-          text.split(/[,\n\r]+/)
-              .map(w => w.trim())
-              .filter(w => w && /^[a-z]+$/i.test(w))
-        )];
-        showMessage(`✅ ${allWords.length} words loaded`, 'success');
-      } catch (err) {
-        console.error(err);
-        showMessage('❌ Could not load <code>Words/words.csv</code>', 'warning');
-      }
+  let allWords = [];
+  let filteredWords = [];
+  let playedWords = [];
+  let currentWord = null;
+
+  function toggleFilters() {
+    const box = document.getElementById('filtersContent');
+    const text = document.getElementById('toggleFiltersText');
+    const hidden = box.classList.toggle('hidden');
+    text.textContent = hidden ? 'SHOW' : 'HIDE';
+  }
+
+  async function loadWordList() {
+    try {
+      const res = await fetch('Words/words.csv');
+      const text = await res.text();
+      allWords = [...new Set(text.split(/[,\n\r]+/).map(w => w.trim()).filter(Boolean))];
+    } catch {
+      showMessage('❌ words.csv not found', 'warning');
     }
+  }
 
-    /* === APPLY FILTERS === */
-    function applyFilters() {
-      const min = parseInt(rangeFrom.value) || 1;
-      const max = parseInt(rangeTo.value) || 99;
-      const exactInput = specificWords.value;
-      const exactList = exactInput
-        ? exactInput.split(/[,\n\r]+/).map(w => w.trim().toLowerCase()).filter(w => w)
-        : [];
+  function applyFilters() {
+    const min = +rangeFrom.value || 1;
+    const max = +rangeTo.value || 99;
 
-      let candidates = allWords;
-      if (exactList.length > 0) {
-        candidates = allWords.filter(word => exactList.includes(word));
-      }
+    filteredWords = allWords.filter(w => w.length >= min && w.length <= max);
+    playedWords = [];
+    playerSection.classList.remove('hidden');
+    playNextWord();
+    updateStats();
+  }
 
-      filteredWords = candidates.filter(w => w.length >= min && w.length <= max);
-      playedWords = [];
-      currentWord = null;
+  function playNextWord() {
+    const remaining = filteredWords.filter(w => !playedWords.includes(w));
+    if (!remaining.length) return showMessage('🎉 Finished!', 'success');
 
-      if (filteredWords.length === 0) {
-        showMessage('⚠️ No words match the filters', 'warning');
-        playerSection.classList.add('hidden');
-        updateStats();
-        return;
-      }
+    currentWord = remaining[Math.floor(Math.random() * remaining.length)];
+    playedWords.push(currentWord);
+    renderWord();
+    updateStats();
+  }
 
-      showMessage(`🎯 ${filteredWords.length} words available`, 'info');
-      playerSection.classList.remove('hidden');
-      playNextWord();
-      updateStats();
-      document.getElementById('filterInputs').classList.add('hidden');
-    }
+  function renderWord() {
+    wordText.textContent = currentWord;
+    wordText.classList.toggle('hidden', hideTitle.checked);
+    emoji.classList.toggle('hidden', !hideTitle.checked);
 
-    /* === NEXT WORD === */
-    function playNextWord() {
-      const remaining = filteredWords.filter(w => !playedWords.includes(w));
-      if (!remaining.length) {
-        showMessage('🎉 All words have been played!', 'info');
-        return;
-      }
+    audioPlayer.src = `Words/${encodeURIComponent(currentWord)}.mp3`;
+    audioPlayer.play().catch(() => {});
+  }
 
-      currentWord = remaining[Math.floor(Math.random() * remaining.length)];
-      playedWords.push(currentWord);
-      revealed = !hideTitle.checked;
-      renderWord();
-      updateStats();
-    }
+  function toggleSpellingMode() {
+    if (!currentWord) return;
+    wordText.classList.toggle('hidden', hideTitle.checked);
+    emoji.classList.toggle('hidden', !hideTitle.checked);
+  }
 
-    /* === RENDER WORD === */
-    function renderWord() {
-      if (!currentWord) return;
-      wordText.textContent = currentWord;
-      wordText.classList.toggle('hidden', !revealed);
-      emoji.classList.toggle('hidden', revealed);
+  function resetGame() {
+    filteredWords = [];
+    playedWords = [];
+    playerSection.classList.add('hidden');
+    updateStats();
+  }
 
-      audioPlayer.innerHTML = '';
-      const source = document.createElement('source');
-      source.src = `Words/${encodeURIComponent(currentWord)}.mp3`;
-      source.type = 'audio/mpeg';
-      audioPlayer.appendChild(source);
+  function updateStats() {
+    totalWords.textContent = filteredWords.length;
+    playedCount.textContent = playedWords.length;
+    remainingWords.textContent = filteredWords.length - playedWords.length;
+  }
 
-      audioPlayer.load();
-      audioPlayer.play().catch(() => {
-        console.warn('Audio not found:', currentWord);
-        showMessage(`🔊 Missing audio: <code>${currentWord}.mp3</code>`, 'warning');
-      });
-    }
+  function showMessage(msg, type) {
+    messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
+  }
 
-    /* === SPELLING MODE === */
-    function toggleSpellingMode() {
-      if (!currentWord) return;
-      revealed = !hideTitle.checked;
-      wordText.classList.toggle('hidden', !revealed);
-      emoji.classList.toggle('hidden', revealed);
-    }
+  document.addEventListener('DOMContentLoaded', loadWordList);
+</script>
 
-    /* === RESET GAME === */
-    function resetGame() {
-      filteredWords = [];
-      playedWords = [];
-      currentWord = null;
-      playerSection.classList.add('hidden');
-      audioPlayer.innerHTML = '';
-      updateStats();
-      showMessage('🔄 Game reset', 'info');
-      document.getElementById('filterInputs').classList.remove('hidden');
-    }
-
-    /* === STATS === */
-    function updateStats() {
-      totalWords.textContent = filteredWords.length;
-      playedCount.textContent = playedWords.length;
-      remainingWords.textContent = Math.max(0, filteredWords.length - playedWords.length);
-    }
-
-    /* === MESSAGES === */
-    function showMessage(msg, type) {
-      messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
-    }
-
-    /* === INIT === */
-    document.addEventListener('DOMContentLoaded', () => {
-      loadWordList();
-      updateTicker();
-    });
-  </script>
 </body>
 </html>
