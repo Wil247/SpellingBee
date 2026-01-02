@@ -15,7 +15,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 20px 0;
     }
 
     .container {
@@ -25,6 +25,8 @@
       padding: 40px;
       max-width: 800px;
       width: 100%;
+      margin: 0 auto;
+      padding-bottom: 80px; /* Space for fixed footer */
     }
 
     h1 {
@@ -32,7 +34,7 @@
       color: #4a5568;
       margin-bottom: 28px;
       font-weight: 700;
-      font-size: 2.4rem;
+      font-size: 2.2rem;
     }
 
     .filter-section,
@@ -105,10 +107,6 @@
       opacity: 0.95;
     }
 
-    button:active {
-      transform: translateY(0);
-    }
-
     .btn-primary { background: #667eea; }
     .btn-success { background: #28a745; }
     .btn-danger  { background: #e53e3e; }
@@ -135,7 +133,7 @@
       margin-top: 12px;
     }
 
-    /* ✨ Estilo moderno para el checkbox */
+    /* Modern checkbox */
     .checkbox-group {
       display: flex;
       align-items: center;
@@ -208,6 +206,7 @@
 
     .hidden { display: none !important; }
 
+    /* Footer */
     .footer {
       background: #1a202c;
       color: white;
@@ -219,17 +218,48 @@
       overflow: hidden;
       font-size: 0.85rem;
       text-align: center;
+      z-index: 1000;
     }
 
     .ticker-content {
       display: inline-block;
+      white-space: nowrap;
       padding-left: 100%;
-      animation: ticker 100s linear infinite;
+      animation: ticker 80s linear infinite;
     }
 
     @keyframes ticker {
       from { transform: translateX(0); }
       to   { transform: translateX(-100%); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        padding-bottom: 100px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .filter-row {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+
+      .song-title {
+        font-size: 2rem;
+      }
+
+      .song-emoji {
+        font-size: 4em;
+      }
     }
   </style>
 </head>
@@ -294,19 +324,54 @@
   </div>
 </div>
 
+<!-- FOOTER WITH Ticker -->
 <div class="footer">
   <div class="ticker-content" id="tickerContent"></div>
 </div>
 
 <script>
-  /* PROTECTION */
+  /* Protection */
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('keydown', e => {
-    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key))) {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toLowerCase() === 'u')) {
       e.preventDefault();
     }
   });
 
+  /* Monthly Values in English */
+  const monthlyValues = {
+    0: "Empathy & Responsibility",
+    1: "Perseverance & Growth",
+    2: "Hope & Resilience",
+    3: "Teamwork & Participation",
+    4: "Solidarity & Commitment",
+    5: "Autonomy & Collaboration",
+    6: "Self-Esteem & Perseverance",
+    7: "Self-Esteem & Perseverance",
+    8: "Autonomy & Inclusion",
+    9: "Creativity & Motivation",
+    10: "Responsibility & Collaboration",
+    11: "Equity & Respect for Diversity"
+  };
+
+  /* Update Footer Ticker */
+  function updateTicker() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const values = monthlyValues[currentMonth] || "Monthly Values";
+
+    const messages = [
+      `Monthly Values: ${values}`,
+      "Rules: Raise your hand to speak",
+      "Be respectful to classmates and teacher",
+      "Teacher: Wilfran L Decena"
+    ];
+
+    const repeated = [...messages, ...messages, ...messages];
+    document.getElementById('tickerContent').textContent = repeated.join(" • ");
+  }
+
+  /* DOM Elements */
   const rangeFrom = document.getElementById('rangeFrom');
   const rangeTo = document.getElementById('rangeTo');
   const specificWords = document.getElementById('specificWords');
@@ -345,7 +410,6 @@
   function applyFilters() {
     const min = +rangeFrom.value || 1;
     const max = +rangeTo.value || 99;
-
     filteredWords = allWords.filter(w => w.length >= min && w.length <= max);
     playedWords = [];
     playerSection.classList.remove('hidden');
@@ -356,7 +420,6 @@
   function playNextWord() {
     const remaining = filteredWords.filter(w => !playedWords.includes(w));
     if (!remaining.length) return showMessage('🎉 Finished!', 'success');
-
     currentWord = remaining[Math.floor(Math.random() * remaining.length)];
     playedWords.push(currentWord);
     renderWord();
@@ -367,7 +430,6 @@
     wordText.textContent = currentWord;
     wordText.classList.toggle('hidden', hideTitle.checked);
     emoji.classList.toggle('hidden', !hideTitle.checked);
-
     audioPlayer.src = `Words/${encodeURIComponent(currentWord)}.mp3`;
     audioPlayer.play().catch(() => {});
   }
@@ -395,7 +457,11 @@
     messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
   }
 
-  document.addEventListener('DOMContentLoaded', loadWordList);
+  /* Initialize */
+  document.addEventListener('DOMContentLoaded', () => {
+    loadWordList();
+    updateTicker(); // ✅ Starts footer ticker with English values
+  });
 </script>
 
 </body>
