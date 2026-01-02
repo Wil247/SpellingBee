@@ -216,7 +216,7 @@
       bottom: 0;
       left: 0;
       overflow: hidden;
-      font-size: 0.85rem;
+      font-size: 0.9rem; /* Ajustado para mejor legibilidad */
       text-align: center;
       z-index: 1000;
     }
@@ -368,7 +368,8 @@
     ];
 
     const repeated = [...messages, ...messages, ...messages];
-    document.getElementById('tickerContent').textContent = repeated.join(" • ");
+    const separator = "&nbsp; &nbsp;😊&nbsp; &nbsp;";
+    document.getElementById('tickerContent').innerHTML = repeated.join(separator);
   }
 
   /* DOM Elements */
@@ -460,7 +461,7 @@
   /* Initialize */
   document.addEventListener('DOMContentLoaded', () => {
     loadWordList();
-    updateTicker(); // ✅ Starts footer ticker with English values
+    updateTicker();
   });
 </script>
 
