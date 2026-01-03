@@ -267,202 +267,152 @@
 <body>
 
 <div class="container">
-  <h1>🎵 Spelling Bee</h1>
+<h1>🎵 Spelling Bee</h1>
 
-  <!-- FILTERS -->
-  <div class="filter-section">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <label>Letter Range</label>
-      <span id="toggleFiltersText"
-            onclick="toggleFilters()"
-            style="cursor:pointer; font-weight:600; color:#667eea;">
-        HIDE
-      </span>
-    </div>
-
-    <div id="filtersContent">
-      <div class="filter-row">
-        <input type="number" id="rangeFrom" value="1" min="1" />
-        <input type="number" id="rangeTo" value="15" min="1" />
-      </div>
-
-      <label>Exact Words (separated by commas or line breaks)</label>
-      <textarea id="specificWords"></textarea>
-
-      <div class="button-group">
-        <button class="btn-primary" onclick="applyFilters()">Load Words</button>
-      </div>
-    </div>
+<div class="filter-section">
+  <label>Letter Range</label>
+  <div class="filter-row">
+    <input type="number" id="rangeFrom" value="1">
+    <input type="number" id="rangeTo" value="15">
   </div>
 
-  <!-- SPELLING & PLAYER SECTION -->
-  <div class="spelling-controls-section">
-    <div class="checkbox-group">
-      <input type="checkbox" id="hideTitle" onchange="toggleSpellingMode()">
-      <label for="hideTitle">Spelling Mode (hide word)</label>
-    </div>
+  <label>Exact Words (comma or line break)</label>
+  <textarea id="specificWords"></textarea>
 
-    <div id="messageContainer"></div>
-
-    <div id="playerSection" class="player-section hidden">
-      <div id="emoji" class="song-emoji hidden">😊</div>
-      <div id="wordText" class="song-title"></div>
-      <audio id="audioPlayer" controls></audio>
-    </div>
-
-    <div class="button-group">
-      <button class="btn-success" onclick="playNextWord()">Next</button>
-      <button class="btn-danger" onclick="resetGame()">Reset</button>
-    </div>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats">
-    <div><div id="totalWords" class="stat-number">0</div>Total</div>
-    <div><div id="playedCount" class="stat-number">0</div>Played</div>
-    <div><div id="remainingWords" class="stat-number">0</div>Remaining</div>
+  <div class="button-group">
+    <button class="btn-primary" onclick="applyFilters()">Load Words</button>
   </div>
 </div>
 
-<!-- FOOTER WITH Ticker -->
+<div class="spelling-controls-section">
+  <div class="checkbox-group">
+    <input type="checkbox" id="hideTitle" onchange="toggleSpellingMode()">
+    <label for="hideTitle">Spelling Mode</label>
+  </div>
+
+  <div id="messageContainer"></div>
+
+  <div id="playerSection" class="player-section hidden">
+    <div id="emoji" class="song-emoji hidden">😊</div>
+    <div id="wordText" class="song-title"></div>
+    <audio id="audioPlayer" controls></audio>
+  </div>
+
+  <div class="button-group">
+    <button class="btn-success" onclick="playNextWord()">Next</button>
+    <button class="btn-danger" onclick="resetGame()">Reset</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div><div id="totalWords" class="stat-number">0</div>Total</div>
+  <div><div id="playedCount" class="stat-number">0</div>Played</div>
+  <div><div id="remainingWords" class="stat-number">0</div>Remaining</div>
+</div>
+</div>
+
 <div class="footer">
-  <div class="ticker-content" id="tickerContent"></div>
+  <div class="ticker-content">
+    Monthly Values • Respect • Responsibility • Teacher: Wilfran L. Decena
+  </div>
 </div>
 
 <script>
-  /* Protection */
-  document.addEventListener('contextmenu', e => e.preventDefault());
-  document.addEventListener('keydown', e => {
-    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toLowerCase() === 'u')) {
-      e.preventDefault();
-    }
-  });
+const rangeFrom = document.getElementById('rangeFrom');
+const rangeTo = document.getElementById('rangeTo');
+const specificWords = document.getElementById('specificWords');
+const playerSection = document.getElementById('playerSection');
+const wordText = document.getElementById('wordText');
+const emoji = document.getElementById('emoji');
+const audioPlayer = document.getElementById('audioPlayer');
+const messageContainer = document.getElementById('messageContainer');
+const totalWords = document.getElementById('totalWords');
+const playedCount = document.getElementById('playedCount');
+const remainingWords = document.getElementById('remainingWords');
+const hideTitle = document.getElementById('hideTitle');
 
-  /* Monthly Values in English */
-  const monthlyValues = {
-    0: "Empathy & Responsibility",
-    1: "Perseverance & Growth",
-    2: "Hope & Resilience",
-    3: "Teamwork & Participation",
-    4: "Solidarity & Commitment",
-    5: "Autonomy & Collaboration",
-    6: "Self-Esteem & Perseverance",
-    7: "Self-Esteem & Perseverance",
-    8: "Autonomy & Inclusion",
-    9: "Creativity & Motivation",
-    10: "Responsibility & Collaboration",
-    11: "Equity & Respect for Diversity"
-  };
+let allWords = [];
+let filteredWords = [];
+let playedWords = [];
+let currentWord = null;
 
-  /* Update Footer Ticker */
-  function updateTicker() {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const values = monthlyValues[currentMonth] || "Monthly Values";
-
-    const messages = [
-      `Monthly Values: ${values}`,
-      "Rules: Raise your hand to speak",
-      "Be respectful to classmates and teacher",
-      "Teacher: Wilfran L Decena"
-    ];
-
-    const repeated = [...messages, ...messages, ...messages];
-    const separator = "&nbsp; &nbsp;😊&nbsp; &nbsp;";
-    document.getElementById('tickerContent').innerHTML = repeated.join(separator);
+async function loadWordList(){
+  try{
+    const res = await fetch('Words/words.csv');
+    const text = await res.text();
+    allWords = [...new Set(text.split(/[,\n\r]+/).map(w=>w.trim()).filter(Boolean))];
+  }catch{
+    showMessage('❌ words.csv not found','warning');
   }
+}
 
-  /* DOM Elements */
-  const rangeFrom = document.getElementById('rangeFrom');
-  const rangeTo = document.getElementById('rangeTo');
-  const specificWords = document.getElementById('specificWords');
-  const playerSection = document.getElementById('playerSection');
-  const wordText = document.getElementById('wordText');
-  const emoji = document.getElementById('emoji');
-  const audioPlayer = document.getElementById('audioPlayer');
-  const messageContainer = document.getElementById('messageContainer');
-  const totalWords = document.getElementById('totalWords');
-  const playedCount = document.getElementById('playedCount');
-  const remainingWords = document.getElementById('remainingWords');
-  const hideTitle = document.getElementById('hideTitle');
+function applyFilters(){
+  playedWords = [];
+  const manual = specificWords.value.trim();
 
-  let allWords = [];
-  let filteredWords = [];
-  let playedWords = [];
-  let currentWord = null;
-
-  function toggleFilters() {
-    const box = document.getElementById('filtersContent');
-    const text = document.getElementById('toggleFiltersText');
-    const hidden = box.classList.toggle('hidden');
-    text.textContent = hidden ? 'SHOW' : 'HIDE';
-  }
-
-  async function loadWordList() {
-    try {
-      const res = await fetch('Words/words.csv');
-      const text = await res.text();
-      allWords = [...new Set(text.split(/[,\n\r]+/).map(w => w.trim()).filter(Boolean))];
-    } catch {
-      showMessage('❌ words.csv not found', 'warning');
-    }
-  }
-
-  function applyFilters() {
+  if(manual){
+    filteredWords = [...new Set(
+      manual.split(/[\n,]+/).map(w=>w.trim()).filter(Boolean)
+    )];
+  }else{
     const min = +rangeFrom.value || 1;
     const max = +rangeTo.value || 99;
-    filteredWords = allWords.filter(w => w.length >= min && w.length <= max);
-    playedWords = [];
-    playerSection.classList.remove('hidden');
-    playNextWord();
-    updateStats();
+    filteredWords = allWords.filter(w=>w.length>=min && w.length<=max);
   }
 
-  function playNextWord() {
-    const remaining = filteredWords.filter(w => !playedWords.includes(w));
-    if (!remaining.length) return showMessage('🎉 Finished!', 'success');
-    currentWord = remaining[Math.floor(Math.random() * remaining.length)];
-    playedWords.push(currentWord);
-    renderWord();
-    updateStats();
+  if(!filteredWords.length){
+    showMessage('⚠️ No valid words','warning');
+    return;
   }
 
-  function renderWord() {
-    wordText.textContent = currentWord;
-    wordText.classList.toggle('hidden', hideTitle.checked);
-    emoji.classList.toggle('hidden', !hideTitle.checked);
-    audioPlayer.src = `Words/${encodeURIComponent(currentWord)}.mp3`;
-    audioPlayer.play().catch(() => {});
-  }
+  playerSection.classList.remove('hidden');
+  playNextWord();
+  updateStats();
+}
 
-  function toggleSpellingMode() {
-    if (!currentWord) return;
-    wordText.classList.toggle('hidden', hideTitle.checked);
-    emoji.classList.toggle('hidden', !hideTitle.checked);
+function playNextWord(){
+  const remaining = filteredWords.filter(w=>!playedWords.includes(w));
+  if(!remaining.length){
+    showMessage('🎉 Finished!','success');
+    return;
   }
+  currentWord = remaining[Math.floor(Math.random()*remaining.length)];
+  playedWords.push(currentWord);
+  renderWord();
+  updateStats();
+}
 
-  function resetGame() {
-    filteredWords = [];
-    playedWords = [];
-    playerSection.classList.add('hidden');
-    updateStats();
-  }
+function renderWord(){
+  wordText.textContent = currentWord;
+  wordText.classList.toggle('hidden',hideTitle.checked);
+  emoji.classList.toggle('hidden',!hideTitle.checked);
+  audioPlayer.src = `Words/${encodeURIComponent(currentWord)}.mp3`;
+  audioPlayer.play().catch(()=>{});
+}
 
-  function updateStats() {
-    totalWords.textContent = filteredWords.length;
-    playedCount.textContent = playedWords.length;
-    remainingWords.textContent = filteredWords.length - playedWords.length;
-  }
+function toggleSpellingMode(){
+  if(!currentWord) return;
+  renderWord();
+}
 
-  function showMessage(msg, type) {
-    messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
-  }
+function resetGame(){
+  filteredWords=[];
+  playedWords=[];
+  playerSection.classList.add('hidden');
+  updateStats();
+}
 
-  /* Initialize */
-  document.addEventListener('DOMContentLoaded', () => {
-    loadWordList();
-    updateTicker();
-  });
+function updateStats(){
+  totalWords.textContent = filteredWords.length;
+  playedCount.textContent = playedWords.length;
+  remainingWords.textContent = filteredWords.length-playedWords.length;
+}
+
+function showMessage(msg,type){
+  messageContainer.innerHTML = `<div class="message ${type}">${msg}</div>`;
+}
+
+document.addEventListener('DOMContentLoaded',loadWordList);
 </script>
 
 </body>
